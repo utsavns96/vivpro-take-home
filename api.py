@@ -54,7 +54,7 @@ def get_by_id(song_id):
     logger.info(f"API call: GET /songs/{song_id}")
     song = fetch_song_by_id(song_id)
     if not song:
-        return jsonify({"error": "Song not found"}), 404
+        return jsonify({"error": "Song not found"}), 404 # Return 404 if song not found
     return jsonify(dict(song))
 
 
@@ -62,17 +62,23 @@ def get_by_id(song_id):
 @app.route('/songs/<song_id>/rate', methods=['POST'])
 def rate_song(song_id):
     logger.info(f"API call: POST /songs/{song_id}/rate")
-
+    #Error handling for JSON content-type
     if not request.is_json:
         logger.warning("Request content-type not JSON")
-        return jsonify({"error": "Request must be JSON"}), 400
-    
+        return jsonify({"error": "Request must be JSON"}), 400 # Return 400 if content-type is not JSON
+    # Extracting the rating from the request body
     data = request.get_json()
     rating = data.get("rating")
     
+    # Error handling for missing or invalid rating
     if rating is None:
         logger.warning("Missing 'rating' in request JSON")
-        return jsonify({"error": "Missing 'rating' in request body"}), 400
+        return jsonify({"error": "Missing 'rating' in request body"}), 400 # Return 400 if rating is missing
+    
+    # Error handling for invalid rating datatype
+    if not isinstance(rating, (int, float)):
+        logger.warning(f"Invalid rating type: {type(rating)}")
+        return jsonify({"error": "Rating must be a number"}), 400 # Return 400 if rating is not a number
 
     try:
         rating = float(rating)
@@ -80,15 +86,16 @@ def rate_song(song_id):
             raise ValueError("Rating must be between 0 and 5")
     except ValueError as e:
         logger.warning(f"Invalid rating value: {rating}")
-        return jsonify({"error": str(e)}), 400
+        return jsonify({"error": str(e)}), 400 # Return 400 if rating is invalid
 
+    # Update the rating in the database
     updated = update_rating(song_id, rating)
     if updated == 0:
         logger.warning(f"No song found with ID {song_id}")
-        return jsonify({"error": "Song not found"}), 404
+        return jsonify({"error": "Song not found"}), 404 # Return 404 if song not found
 
     logger.info(f"Rating updated successfully for song ID {song_id}")
-    return jsonify({"message": "Rating updated successfully"}), 200
+    return jsonify({"message": "Rating updated successfully"}), 200 # Return 200 if rating updated successfully
 
 
 if __name__ == '__main__':
