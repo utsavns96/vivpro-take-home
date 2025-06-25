@@ -3,6 +3,20 @@ This repository contains my solution for Vivpro's Backend Take Home assignment
 
 ---
 
+Table of Contents:
+
+1. [Overview](#overview)
+2. [Setup](#setup)
+3. [Running the project](#running-the-project)
+4. [Technical Description](#technical-description)
+    i. [dataParsing.py](#1-dataparsingpy)
+    ii. [db.py](#2-dbpy)
+    iii. [api.py](#3-apipy)
+    iv. [main.py](#4-mainpy)
+5. Test Cases
+
+---
+
 ## Overview:
 This project aims to:
 1. Normalize a nested JSON dataset of songs into a clean, tabular format.
@@ -25,6 +39,21 @@ I like to use Chocolatey since I'm on a Windows machine. The steps to install ch
     iii. flask: `pip install flask`
 
 The environment should now be set up.
+
+---
+
+## Running the project:
+
+Before you can run the program, please ensure that your raw input JSON is present in the `/input` folder, and the filepath is configured correctly in `config.json`. 
+To run the project, navigate to the directory and run the command `python main.py`. You will be presented with 2 options:<br>
+![alt text](README_Images/image.png)
+<br>
+Select 1 to ingest the new JSON file. After the data has been ingested once, run `python main.py` again and  select 2 to run the API.
+The API will run until the user interrupts it with a `CTRL+C` command.
+Once the data has been ingested, the API can be run any number of times, since the data is held persistently in a SQLite database.
+
+---
+
 
 ## Technical Description:
 
@@ -58,7 +87,7 @@ Output Files
 
 ### 2. db.py
 
-The dp.py file serves as the database access layer for the application. It encapsulates all direct interactions with the SQLite database, ensuring clean separation between business logic and storage logic. This module is imported by the API server to fetch, query, and update song data without dealing directly with SQL or database connections.
+The `dp.py` file serves as the database access layer for the application. It encapsulates all direct interactions with the SQLite database, ensuring clean separation between business logic and storage logic. This module is imported by the API server to fetch, query, and update song data without dealing directly with SQL or database connections.
 Implementing the database connection in this way allows an easier path to swap to another database (Like PostgreSQL or Oracle).
 
 Key Responsibilities:
@@ -84,3 +113,30 @@ Output Files
     SQLite DB: data/playlist.db (table: songs)
 - Logs are written to:<br>
     Log file: logs/dataParsing.log
+
+### 3. api.py
+
+The api.py file is the main web server for this music playlist application. It provides RESTful endpoints for accessing and modifying song data stored in a SQLite database.
+This Flask-based API supports three major operations:
+1. Retrieve all songs with pagination (GET)
+2. Fetch song by ID (GET)
+3. Update rating of a song by ID (POST)
+
+The endpoint /songs accepts `page` and `limit` query parameters, allowing pagination and enabling the database to scale with larger datasets. Invalid parameters are handled with error messages.
+
+Database access is delegated to db.py, keeping teh API logic clean and focused on handling the business logic for API requests and responses.
+
+The `/rate` endpoint requires a JSON format, and validates that the rating exists within the JSON, is numeric and lies between 0-5(float), ensuring that data quality is maintained.
+
+The API returns the following HTTp codes:
+- `200 OK` for successful responses
+- `400 Bad Request` when validation issues are encountered with query params/JSON body
+- `404 Not Found` when a song with the given ID does not exist.
+
+This also uses a named logger to avoid conflicts with db.py, and writes the logs to the `/logs/api.log` file, as well as to the console. The logging is configured to capture all API activity, including requests, pagination info, validation features and successful operations.
+
+The default port used is localhost:5000 (127.0.0.1:5000).
+
+### 4. main.py
+
+This is a simple main file that present the user with options to run the desired program. They can choose between running `dataParsing.py` or `api.py`, making it easy for the user to run it with a simple `python main.py` command and not worry about the individual modules.
