@@ -1,6 +1,7 @@
 import json
 import pandas as pd
 from pydantic import BaseModel, Field, ValidationError
+from typing import Optional
 import logging
 import sqlite3
 
@@ -40,6 +41,7 @@ class Song(BaseModel):
     num_sections: int
     num_segments: int
     class_: int = Field(alias='class')
+    rating: Optional[float] = None
 
     class Config:
         populate_by_name  = True
@@ -69,6 +71,10 @@ def validate_songs(df):
     logging.info(f"{len(valid_rows)} valid rows out of {len(df)}")
     return valid_rows
 
+
+# Function to save the validated DataFrame to a SQLite database
+# It connects to the database, saves the DataFrame as a table named 'songs', and logs the process
+# If the database file does not exist, it will be created
 def save_to_db(df, db_path='data/playlist.db'):
     logging.info(f"Saving data to database at {db_path}")
     conn = sqlite3.connect(db_path)
@@ -102,6 +108,7 @@ if __name__ == "__main__":
     validated_df = validate_songs(df)
     # print(validated_df.head(10))
     validated_df = pd.DataFrame([song.model_dump(by_alias=True) for song in validated_df])
+    validated_df["rating"] = None
     validated_df.to_csv(output_path, index=False)
     save_to_db(validated_df, db_path=config.get("db_path", 'data/playlist.db'))
     logging.info(f"Saved validated data to {output_path}")
