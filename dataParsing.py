@@ -28,8 +28,8 @@ class Song(BaseModel):
     num_segments: int
     class_: int = Field(alias='class')
 
-class Config:
-    allow_population_by_field_name = True
+    class Config:
+        populate_by_name  = True
 
 def load_data(file_path):
     logging.info(f"Loading data from {file_path}")
@@ -50,11 +50,24 @@ def validate_songs(df):
     logging.info(f"{len(valid_rows)} valid rows out of {len(df)}")
     return valid_rows
 
+def load_config(path='config.json'):
+    try:
+        with open(path, 'r') as file:
+            config = json.load(file)
+        logging.info(f"Loaded config from {path}")
+        return config
+    except Exception as e:
+        logging.error(f"Error loading config from {path}: {e}")
+        return {}
 
 if __name__ == "__main__":
-    input_path = 'data/playlist.json'
-    output_path = 'data/playlist.csv'
+    #get configuration settings
+    config = load_config('config.json')
+    #get input and output paths from config or use defaults
+    input_path = config.get("input_path", 'data/playlist.json')
+    output_path = config.get("output_path", 'data/playlist.csv')
     logging.info("Starting data ingestion and validation process")
+    # Load the data from the JSON file
     df = load_data(input_path)
     # Validate the songs in the DataFrame
     validated_df = validate_songs(df)
