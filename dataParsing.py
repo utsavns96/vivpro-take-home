@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field, ValidationError
 from typing import Optional
 import logging
 import sqlite3
+import os
 
 '''
 Data ingestion and validation pipeline for music playlist data.
@@ -14,6 +15,7 @@ It uses Pydantic for data validation, Pandas for data manipulation, and logging 
 '''
 
 # Set up logging
+os.makedirs('logs', exist_ok=True)
 # Logging is configured to log messages to both a file and the console
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s',
