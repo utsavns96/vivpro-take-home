@@ -104,6 +104,8 @@ if __name__ == "__main__":
     logging.info("Starting data ingestion and validation process")
     # Load the data from the JSON file
     df = load_data(input_path)
+    # Ensure the column names are stripped of whitespace and converted to lowercase
+    df.columns = df.columns.str.strip().str.lower()
     # Validate the songs in the DataFrame
     validated_df = validate_songs(df)
     # print(validated_df.head(10))
