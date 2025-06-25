@@ -43,8 +43,10 @@ class Song(BaseModel):
     class_: int = Field(alias='class')
     rating: Optional[float] = None
 
-    class Config:
-        populate_by_name  = True
+    model_config = {
+        "populate_by_name": True
+    }
+
 
 # Function to load data from a JSON file into a Pandas DataFrame
 # It reads the JSON file, converts it to a DataFrame, and logs the number of records loaded
