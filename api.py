@@ -32,7 +32,20 @@ app = Flask(__name__)
 @app.route('/songs', methods=['GET'])
 def get_all():
     logger.info("API call: GET /songs")
-    return jsonify([dict(row) for row in fetch_all_songs()])
+
+    page = request.args.get('page', default=1, type=int)
+    limit = request.args.get('limit', default=10, type=int)
+    if page < 1 or limit < 1:
+        logger.warning("Invalid pagination parameters")
+        return jsonify({"error": "Page and limit must be positive integers"}), 400
+    logger.info(f"Pagination parameters: page={page}, limit={limit}")
+    all_songs = [dict(row) for row in fetch_all_songs()]
+    start = (page - 1) * limit
+    end = start + limit
+    paginated = all_songs[start:end]
+    return jsonify(
+        {"page": page, "limit": limit, "total": len(all_songs), "songs": paginated}
+    )
 
 
 # Fetch a song by its ID
