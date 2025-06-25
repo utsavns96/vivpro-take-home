@@ -1,6 +1,8 @@
 import sqlite3
 import logging
 import os
+import json
+from contextlib import closing
 
 # Ensure the logs directory exists
 os.makedirs('logs', exist_ok=True)
@@ -24,26 +26,42 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-DB_PATH = 'data/playlist.db'
+#DB_PATH = 'data/playlist.db'
 
+# Function to load configuration settings from a JSON file
+# It reads the configuration file and returns the settings as a dictionary
+def load_config(path='config.json'):
+    try:
+        with open(path, 'r') as file:
+            config = json.load(file)
+        logging.info(f"Loaded config from {path}")
+        return config
+    except Exception as e:
+        logging.error(f"Error loading config from {path}: {e}")
+        return {}
+
+# Function to establish a connection to the SQLite database
 def get_connection():
+    # Load configuration settings
+    config=load_config()
     # Establish a connection to the SQLite database
     logger.info("Establishing database connection")
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
+    # Check if the database path is provided in the config, otherwise use default
+    conn = sqlite3.connect(config.get('db_path', 'data/playlist.db'))
+    conn.row_factory = sqlite3.Row # This allows us to access columns by name
     logger.info("Database connection established")
     return conn
 
 def fetch_all_songs():
     # Fetch all songs from the database
     logger.info("Fetching all songs from the database")
-    with get_connection() as conn:
+    with closing(get_connection()) as conn:
         return conn.execute("SELECT * FROM songs").fetchall()
 
 def fetch_song_by_id(song_id):
     # Fetch a single song by its ID
     logger.info(f"Fetching song with ID {song_id}")
-    with get_connection() as conn:
+    with closing(get_connection()) as conn:
         return conn.execute("SELECT * FROM songs WHERE id = ?", (song_id,)).fetchone()
 
 
@@ -51,7 +69,7 @@ def update_rating(song_id, rating):
     # Update the rating of a song by its ID
     logger.info(f"Updating rating for song ID {song_id} to {rating}")
     try:
-        with get_connection() as conn:
+        with closing(get_connection()) as conn:
             cursor = conn.execute(
                 "UPDATE songs SET rating = ? WHERE id = ?", (rating, song_id)
             )
