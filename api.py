@@ -44,7 +44,7 @@ def get_all():
     end = start + limit
     paginated = all_songs[start:end]
     return jsonify(
-        {"page": page, "limit": limit, "total": len(all_songs), "songs": paginated}
+        {"page": page, "limit": limit, "total": len(all_songs), "data": paginated}
     )
 
 
