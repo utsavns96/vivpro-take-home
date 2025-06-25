@@ -146,14 +146,26 @@ This is a simple main file that present the user with options to run the desired
 ## 5.Outputs:
 
 ### 1. Fetch All:
-![menu options](README_Images/fetch_all_output.png)
+![Postman screenshot 1](README_Images/fetch_all_output.png)
 
 ### 2. Get Song by ID:
-![menu options](README_Images/get_songs_by_id_output.png)
+![Postman screenshot 2](README_Images/get_songs_by_id_output.png)
 
 
 ### 3. Update Rating:
-![menu options](README_Images/update_rating_output.png)
+![Postman screenshot 3](README_Images/update_rating_output.png)
 
 ### 4. Rating Successfuly Updated:
-![menu options](README_Images/rating_updated.png)
+![Postman screenshot 4](README_Images/rating_updated.png)
+
+### 5. Rating missing from JSON body:
+![Postman screenshot 5](README_Images/missing%20rating.png)
+
+### 6. Rating out of bounds:
+![Postman screenshot 6](README_Images/rating%20out%20of%20bounds.png)
+
+### 7. Rating not a number:
+![Postman screenshot 7](README_Images/rating_not_a_number.png)
+
+### 6. Song not Found:
+![Postman screenshot 8](README_Images/song%20not%20found.png)
