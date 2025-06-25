@@ -13,7 +13,7 @@ Table of Contents:
     ii. [db.py](#2-dbpy)
     iii. [api.py](#3-apipy)
     iv. [main.py](#4-mainpy)
-5. Test Cases
+5. [Output](#5outputs)
 
 ---
 
@@ -46,7 +46,7 @@ The environment should now be set up.
 
 Before you can run the program, please ensure that your raw input JSON is present in the `/input` folder, and the filepath is configured correctly in `config.json`. 
 To run the project, navigate to the directory and run the command `python main.py`. You will be presented with 2 options:<br>
-![alt text](README_Images/image.png)
+![menu options](README_Images/image.png)
 <br>
 Select 1 to ingest the new JSON file. After the data has been ingested once, run `python main.py` again and  select 2 to run the API.
 The API will run until the user interrupts it with a `CTRL+C` command.
@@ -140,3 +140,20 @@ The default port used is localhost:5000 (127.0.0.1:5000).
 ### 4. main.py
 
 This is a simple main file that present the user with options to run the desired program. They can choose between running `dataParsing.py` or `api.py`, making it easy for the user to run it with a simple `python main.py` command and not worry about the individual modules.
+
+---
+
+## 5.Outputs:
+
+### 1. Fetch All:
+![menu options](README_Images/fetch_all_output.png)
+
+### 2. Get Song by ID:
+![menu options](README_Images/get_songs_by_id_output.png)
+
+
+### 3. Update Rating:
+![menu options](README_Images/update_rating_output.png)
+
+### 4. Rating Successfuly Updated:
+![menu options](README_Images/rating_updated.png)
