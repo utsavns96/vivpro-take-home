@@ -113,6 +113,6 @@ if __name__ == "__main__":
     # print(validated_df.head(10))
     validated_df = pd.DataFrame([song.model_dump(by_alias=True) for song in validated_df])
     validated_df["rating"] = None
-    validated_df.to_csv(output_path, index=False)
+    #validated_df.to_csv(output_path, index=False)
     save_to_db(validated_df, db_path=config.get("db_path", 'data/playlist.db'))
     logging.info(f"Saved validated data to {output_path}")
