@@ -27,12 +27,16 @@ logger.addHandler(stream_handler)
 
 app = Flask(__name__)
 
-@app.route('/songs')
+
+# Fetch all songs from the database
+@app.route('/songs', methods=['GET'])
 def get_all():
     logger.info("API call: GET /songs")
     return jsonify([dict(row) for row in fetch_all_songs()])
 
-@app.route('/songs/<string:song_id>')
+
+# Fetch a song by its ID
+@app.route('/songs/<string:song_id>', methods=['GET'])
 def get_by_id(song_id):
     logger.info(f"API call: GET /songs/{song_id}")
     song = fetch_song_by_id(song_id)
@@ -40,6 +44,8 @@ def get_by_id(song_id):
         return jsonify({"error": "Song not found"}), 404
     return jsonify(dict(song))
 
+
+# Update the rating of a song
 @app.route('/songs/<song_id>/rate', methods=['POST'])
 def rate_song(song_id):
     logger.info(f"API call: POST /songs/{song_id}/rate")
