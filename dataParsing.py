@@ -9,7 +9,7 @@ import os
 '''
 Data ingestion and validation pipeline for music playlist data.
 This script reads a JSON file containing music playlist data, validates each entry against a predefined schema using Pydantic,
-and saves the validated data to a CSV file. It also logs the process, including any validation errors encountered.
+and saves the validated data to a SQLite database. It also logs the process, including any validation errors encountered.
 This script is designed to be run as a standalone module, and it expects a configuration file named 'config.json' to specify input and output paths.
 It uses Pydantic for data validation, Pandas for data manipulation, and logging for tracking the process.
 '''
@@ -64,15 +64,22 @@ def load_data(file_path):
 # It iterates through each row, attempts to create a Song instance, and logs any validation errors
 # Valid songs are collected in a list and returned as a list of Song instances
 def validate_songs(df):
+    #start_time=time.perf_counter()
     logging.info("Validating data from JSON")
-    valid_rows=[]
-    for i, row in df.iterrows():
+    valid_rows=[] #dict to store valid rows
+    # Iterate through each row in the DataFrame
+    # Not using iterrows() for better performance (theoretically), instead using a range loop 
+    # Did not see significant performance difference in practice for this dataset size - 0.00585960 vs 0.00576640
+    for index in range(len(df)):
         try:
-            song = Song(**row.to_dict())
-            valid_rows.append(song)
+            song = Song(**df.iloc[index].to_dict())  # Convert row to dict, unpack and validate against Song model
+            valid_rows.append(song)  # Add to valid rows if validated
         except ValidationError as e:
-            logging.error(f"Validation error in Row {i}: {e}")
+            logging.error(f"Validation error in Row {index}: {e}")
+    # Log the number of valid rows found
     logging.info(f"{len(valid_rows)} valid rows out of {len(df)}")
+    #end_time=time.perf_counter()
+    #logging.info(f"Validation completed in {end_time-start_time:.8f} seconds")
     return valid_rows
 
 
@@ -82,7 +89,7 @@ def validate_songs(df):
 def save_to_db(df, db_path='data/playlist.db'):
     logging.info(f"Saving data to database at {db_path}")
     conn = sqlite3.connect(db_path)
-    df.to_sql('songs', conn, if_exists='replace', index=False)
+    df.to_sql('songs', conn, if_exists='replace', index=False) #(table name, connection object, if_exists='replace' to overwrite existing table, index=false to drop index)
     conn.close()
     logging.info("Data saved to database successfully")
 
@@ -104,7 +111,8 @@ if __name__ == "__main__":
     config = load_config('config.json')
     #get input and output paths from config or use defaults
     input_path = config.get("input_path", 'data/playlist.json')
-    output_path = config.get("output_path", 'data/playlist.csv')
+    db_path=config.get("db_path", 'data/playlist.db')
+    #output_path = config.get("output_path", 'data/playlist.csv')
     logging.info("Starting data ingestion and validation process")
     # Load the data from the JSON file
     df = load_data(input_path)
@@ -116,5 +124,6 @@ if __name__ == "__main__":
     validated_df = pd.DataFrame([song.model_dump(by_alias=True) for song in validated_df])
     validated_df["rating"] = None
     #validated_df.to_csv(output_path, index=False)
-    save_to_db(validated_df, db_path=config.get("db_path", 'data/playlist.db'))
-    logging.info(f"Saved validated data to {output_path}")
+    save_to_db(validated_df, db_path)
+    logging.info(f"Saved validated data to database at {db_path}")
+    #logging.info(f"Saved validated data to {output_path}")
