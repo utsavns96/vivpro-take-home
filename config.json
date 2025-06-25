@@ -1,4 +1,5 @@
 {
     "input_path": "data/playlist.json",
-    "output_path": "data/playlist.csv"
+    "output_path": "data/playlist.csv",
+    "db_path": "data/playlist.db"
 }
