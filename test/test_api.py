@@ -16,11 +16,20 @@ def test_get_all_songs(mock_fetch_all, client):
     mock_fetch_all.return_value = [
         {"id": "001", "title": "Test Song", "rating": 4.0}
     ]
-    response = client.get('/songs')
+    response = client.get('/songs?page=1&limit=10')
     assert response.status_code == 200
-    assert isinstance(response.json, list)
-    assert response.json[0]['title'] == "Test Song"
+    data = response.get_json()
+    assert "data" in data
+    assert "page" in data
+    assert "limit" in data
+    assert "total" in data
 
+
+    assert isinstance(data["data"], list)
+    assert data["data"][0]["title"] == "Test Song"
+    assert data["page"] == 1
+    assert data["limit"] == 10
+    assert data["total"] == 1
 # ----------------------------
 # 2. Test GET /songs/<song_id>
 # ----------------------------
