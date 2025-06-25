@@ -19,7 +19,8 @@ I like to use Chocolatey since I'm on a Windows machine. The steps to install ch
 2. After the installation is complete, run `python --version` to verify that it has been installed correctly.
 3. Now, install the following packages for this project:
     
-    i. pandas: `pip install pandas`
+    i. pandas: `pip install pandas` <br>
+    ii. pydantic: `pip install pydantic`
 
 The environment should now be set up.
 
