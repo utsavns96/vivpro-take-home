@@ -68,7 +68,9 @@ def fetch_song_by_id(song_id):
     logger.info(f"Fetching song with ID {song_id}")
     with closing(get_connection()) as conn:
         # Fetching a song by ID is a SELECT query with a WHERE clause
-        return conn.execute("SELECT * FROM songs WHERE id = ?", (song_id,)).fetchone()
+        query = "SELECT * FROM songs WHERE title LIKE ?"
+        return conn.execute(query,(f"%{song_id}%",)).fetchall()
+        #return conn.execute(, (song_id,)).fetchone()
 
 
 def update_rating(song_id, rating):

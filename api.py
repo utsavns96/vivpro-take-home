@@ -59,15 +59,15 @@ def get_all():
 
 
 # Fetch a song by its ID
-@app.route('/songs/<string:song_id>', methods=['GET'])
-def get_by_id(song_id):
-    logger.info(f"API call: GET /songs/{song_id}")
+@app.route('/songs/<string:song_name>', methods=['GET'])
+def get_by_id(song_name):
+    logger.info(f"API call: GET /songs/{song_name}")
     # Fetching the song by ID from the database
-    song = fetch_song_by_id(song_id)
+    songs = fetch_song_by_id(song_name)
     # If the song is not found
-    if not song:
+    if not songs:
         return jsonify({"error": "Song not found"}), 404 # Return 404 if song not found
-    return jsonify(dict(song))
+    return jsonify([dict(song) for song in songs])
 
 
 # Update the rating of a song
