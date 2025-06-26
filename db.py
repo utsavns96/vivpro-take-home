@@ -4,6 +4,10 @@ import os
 import json
 from contextlib import closing
 
+'''
+The comments are in greater detail to explain each step of the code
+'''
+
 # Ensure the logs directory exists
 os.makedirs('logs', exist_ok=True)
 

@@ -3,6 +3,10 @@ from db import fetch_all_songs, fetch_song_by_id, update_rating
 import logging
 import os
 
+'''
+The comments are in greater detail to explain each step of the code
+'''
+
 # logging.basicConfig(level=logging.INFO,
 #                     format='%(asctime)s - %(levelname)s - %(message)s',
 #                     handlers=[logging.FileHandler('logs/api.log'),

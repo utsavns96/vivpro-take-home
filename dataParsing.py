@@ -14,6 +14,10 @@ This script is designed to be run as a standalone module, and it expects a confi
 It uses Pydantic for data validation, Pandas for data manipulation, and logging for tracking the process.
 '''
 
+'''
+The comments are in greater detail to explain each step of the code
+'''
+
 # Set up logging
 os.makedirs('logs', exist_ok=True)
 # Logging is configured to log messages to both a file and the console
