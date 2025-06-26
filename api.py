@@ -32,16 +32,22 @@ app = Flask(__name__)
 @app.route('/songs', methods=['GET'])
 def get_all():
     logger.info("API call: GET /songs")
-
+    # Taking pagination parameters from the request
+    # Default values are set to page 1 and limit 10
     page = request.args.get('page', default=1, type=int)
     limit = request.args.get('limit', default=10, type=int)
+    # Making sure that the parameters are not less than 1
     if page < 1 or limit < 1:
         logger.warning("Invalid pagination parameters")
         return jsonify({"error": "Page and limit must be positive integers"}), 400
     logger.info(f"Pagination parameters: page={page}, limit={limit}")
+    # Fetching all songs and converting them to a list of dictionaries
     all_songs = [dict(row) for row in fetch_all_songs()]
+    # Setting our pagination start - page-1 for 0-based index, and multiplying by limit to get the start index of this segment
     start = (page - 1) * limit
+    # Setting the end index as the start + limit
     end = start + limit
+    # Slicing the list to get the paginated data
     paginated = all_songs[start:end]
     return jsonify(
         {"page": page, "limit": limit, "total": len(all_songs), "data": paginated}
@@ -52,7 +58,9 @@ def get_all():
 @app.route('/songs/<string:song_id>', methods=['GET'])
 def get_by_id(song_id):
     logger.info(f"API call: GET /songs/{song_id}")
+    # Fetching the song by ID from the database
     song = fetch_song_by_id(song_id)
+    # If the song is not found
     if not song:
         return jsonify({"error": "Song not found"}), 404 # Return 404 if song not found
     return jsonify(dict(song))
@@ -79,7 +87,7 @@ def rate_song(song_id):
     if not isinstance(rating, (int, float)):
         logger.warning(f"Invalid rating type: {type(rating)}")
         return jsonify({"error": "Rating must be a number"}), 400 # Return 400 if rating is not a number
-
+    # Error handling for rating value
     try:
         rating = float(rating)
         if not (0 <= rating <= 5):

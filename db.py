@@ -56,12 +56,14 @@ def fetch_all_songs():
     # Fetch all songs from the database
     logger.info("Fetching all songs from the database")
     with closing(get_connection()) as conn:
+        # Fetch all is a SELECT * query
         return conn.execute("SELECT * FROM songs").fetchall()
 
 def fetch_song_by_id(song_id):
     # Fetch a single song by its ID
     logger.info(f"Fetching song with ID {song_id}")
     with closing(get_connection()) as conn:
+        # Fetching a song by ID is a SELECT query with a WHERE clause
         return conn.execute("SELECT * FROM songs WHERE id = ?", (song_id,)).fetchone()
 
 
@@ -70,6 +72,7 @@ def update_rating(song_id, rating):
     logger.info(f"Updating rating for song ID {song_id} to {rating}")
     try:
         with closing(get_connection()) as conn:
+            # Update rating is an UPDATE query with a WHERE clause
             cursor = conn.execute(
                 "UPDATE songs SET rating = ? WHERE id = ?", (rating, song_id)
             )
